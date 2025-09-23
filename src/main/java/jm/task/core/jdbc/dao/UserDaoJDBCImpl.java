@@ -9,14 +9,14 @@ import java.util.List;
 
 public class UserDaoJDBCImpl implements UserDao {
 
-        private Connection conn = new Util().getConnection();
+    private Connection conn = new Util().getConnection();
 
-    private final String createTable = "CREATE TABLE IF NOT EXISTS USER (USER_ID INT NOT NULL AUTO_INCREMENT, NAME VARCHAR(40) NOT NULL, LAST_NAME VARCHAR(60) NOT NULL, AGE TINYINT NOT NULL, PRIMARY KEY(USER_ID))";
-    private final String dropTable = "DROP TABLE IF EXISTS USER";
-    private final String insertData = "INSERT INTO USER (NAME, LAST_NAME, AGE) VALUES (?, ?, ?)";
-    private final String statement = "DELETE FROM USER WHERE USER_ID = ?";
-    private final String selectUser = "SELECT NAME, LAST_NAME, AGE FROM USER";
-    private final String cleanTable = "DELETE FROM USER";
+    private static final String CREATE_TABLE = "CREATE TABLE IF NOT EXISTS USER (USER_ID INT NOT NULL AUTO_INCREMENT, NAME VARCHAR(40) NOT NULL, LAST_NAME VARCHAR(60) NOT NULL, AGE TINYINT NOT NULL, PRIMARY KEY(USER_ID))";
+    private static final String DROP_TABLE = "DROP TABLE IF EXISTS USER";
+    private static final String INSERT_TABLE = "INSERT INTO USER (NAME, LAST_NAME, AGE) VALUES (?, ?, ?)";
+    private static final String DELETE_USER = "DELETE FROM USER WHERE USER_ID = ?";
+    private static final String SELECT_USER = "SELECT NAME, LAST_NAME, AGE FROM USER";
+    private static final String CLEAN_TABLE = "DELETE FROM USER";
 
     public UserDaoJDBCImpl() {
 
@@ -24,7 +24,7 @@ public class UserDaoJDBCImpl implements UserDao {
 
     public void createUsersTable() {
         try (Statement stmt = conn.createStatement()) {
-            stmt.executeUpdate(createTable);
+            stmt.executeUpdate(CREATE_TABLE);
         } catch (SQLException er) {
             er.printStackTrace();
         }
@@ -32,27 +32,27 @@ public class UserDaoJDBCImpl implements UserDao {
 
     public void dropUsersTable() {
         try (Statement statement = conn.createStatement()) {
-            statement.executeUpdate(dropTable);
+            statement.executeUpdate(DROP_TABLE);
         } catch (SQLException er) {
             er.printStackTrace();
         }
     }
 
     public void saveUser(String name, String lastName, byte age) {
-        try (PreparedStatement pst = conn.prepareStatement(insertData)) {
+        try (PreparedStatement pst = conn.prepareStatement(INSERT_TABLE)) {
             conn.setAutoCommit(false);
             pst.setString(1, name);
             pst.setString(2, lastName);
             pst.setByte(3, age);
             pst.executeUpdate();
             conn.commit();
-        } catch (SQLException  er) {
+        } catch (SQLException er) {
             er.printStackTrace();
         }
     }
 
     public void removeUserById(long id) {
-        try (PreparedStatement prst = conn.prepareStatement(statement)) {
+        try (PreparedStatement prst = conn.prepareStatement(DELETE_USER)) {
             conn.setAutoCommit(false);
             prst.setLong(1, id);
             prst.executeUpdate();
@@ -64,7 +64,7 @@ public class UserDaoJDBCImpl implements UserDao {
 
     public List<User> getAllUsers() {
         List<User> users = new ArrayList<>();
-        try (PreparedStatement prst = conn.prepareStatement(selectUser); ResultSet rst = prst.executeQuery()) {
+        try (PreparedStatement prst = conn.prepareStatement(SELECT_USER); ResultSet rst = prst.executeQuery()) {
             while (rst.next()) {
                 users.add(new User(rst.getString("name"), rst.getString("last_name"), rst.getByte("age")));
             }
@@ -76,8 +76,8 @@ public class UserDaoJDBCImpl implements UserDao {
 
     public void cleanUsersTable() {
         try (Statement stm = conn.createStatement()) {
-            stm.execute(cleanTable);
-        } cat   ch (SQLException er) {
+            stm.execute(CLEAN_TABLE);
+        } catch (SQLException er) {
             er.printStackTrace();
         }
     }
