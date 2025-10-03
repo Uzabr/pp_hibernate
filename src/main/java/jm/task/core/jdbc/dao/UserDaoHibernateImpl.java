@@ -11,13 +11,13 @@ import java.util.List;
 public class UserDaoHibernateImpl implements UserDao {
 
 private SessionFactory sessionFactory = new Util().getSessionFactory();
-private static final String createTable = "CREATE TABLE IF NOT EXISTS user (" +
+private static final String CREATE_TABLE = "CREATE TABLE IF NOT EXISTS user (" +
         "id BIGINT PRIMARY KEY AUTO_INCREMENT, " +
         "name VARCHAR(255), " +
         "age INT)";
 
-private static final String dropTable = "DROP USER IF EXISTS user";
-private static final String cleanTable = "delete from User";
+private static final String DROP_TABLE = "DROP USER IF EXISTS user";
+private static final String CLEAN_TABLE = "delete from User";
 
 public UserDaoHibernateImpl() {
 
@@ -25,15 +25,12 @@ public UserDaoHibernateImpl() {
 
 @Override
 public void createUsersTable() {
-    Transaction transaction = null;
+
     try (Session session = sessionFactory.openSession()) {
-        transaction = session.beginTransaction();
-        session.createSQLQuery(createTable).executeUpdate();
+        Transaction transaction = session.beginTransaction();
+        session.createSQLQuery(CREATE_TABLE).executeUpdate();
         transaction.commit();
     } catch (Exception e) {
-        if (transaction != null) {
-            transaction.rollback();
-        }
         e.printStackTrace();
 
     }
@@ -43,7 +40,7 @@ public void createUsersTable() {
 public void dropUsersTable() {
     try (Session session = sessionFactory.openSession()) {
         Transaction transaction = session.beginTransaction();
-        session.createSQLQuery(dropTable).executeUpdate();
+        session.createSQLQuery(DROP_TABLE).executeUpdate();
         transaction.commit();
     } catch (Exception e) {
         e.printStackTrace();
@@ -53,11 +50,12 @@ public void dropUsersTable() {
 @Override
 public void saveUser(String name, String lastName, byte age) {
     User user = new User();
-    user.setName(name);
-    user.setLastName(lastName);
-    user.setAge(age);
+
     Transaction transaction = null;
     try (Session session = sessionFactory.openSession()) {
+        user.setName(name);
+        user.setLastName(lastName);
+        user.setAge(age);
         transaction = session.beginTransaction();
         session.persist(user);
         transaction.commit();
@@ -99,7 +97,7 @@ public void cleanUsersTable() {
     Transaction transaction = null;
     try (Session session = sessionFactory.openSession()) {
         transaction = session.beginTransaction();
-        session.createQuery(cleanTable).executeUpdate();
+        session.createQuery(CLEAN_TABLE).executeUpdate();
         transaction.commit();
     } catch (Exception e) {
         if (transaction != null) {
