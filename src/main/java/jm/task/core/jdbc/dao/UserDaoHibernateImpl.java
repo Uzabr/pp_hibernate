@@ -12,20 +12,14 @@ import java.util.List;
 public class UserDaoHibernateImpl implements UserDao {
 
     private SessionFactory sessionFactory = new Util().getSessionFactory();
-    private static final String CREATE_TABLE = "CREATE TABLE IF NOT EXISTS user (" +
-            "id BIGINT PRIMARY KEY AUTO_INCREMENT, " +
-            "name VARCHAR(255), " +
-            "age INT)";
-
+    private static final String CREATE_TABLE = "CREATE TABLE IF NOT EXISTS user (" + "id BIGINT PRIMARY KEY AUTO_INCREMENT, " + "name VARCHAR(255), " + "age INT)";
     private static final String DROP_TABLE = "DROP USER IF EXISTS user";
     private static final String CLEAN_TABLE = "delete from User";
 
-    public UserDaoHibernateImpl() {
-    }
+    public UserDaoHibernateImpl() {}
 
     @Override
     public void createUsersTable() {
-
         try (Session session = sessionFactory.openSession()) {
             Transaction transaction = session.beginTransaction();
             session.createSQLQuery(CREATE_TABLE).executeUpdate();
@@ -50,7 +44,6 @@ public class UserDaoHibernateImpl implements UserDao {
     @Override
     public void saveUser(String name, String lastName, byte age) {
         User user = new User();
-
         Transaction transaction = null;
         try (Session session = sessionFactory.openSession()) {
             user.setName(name);
