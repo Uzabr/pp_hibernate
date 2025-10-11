@@ -16,8 +16,6 @@ public class UserDaoHibernateImpl implements UserDao {
     private static final String DROP_TABLE = "DROP USER IF EXISTS user";
     private static final String CLEAN_TABLE = "delete from User";
 
-    public UserDaoHibernateImpl() {}
-
     @Override
     public void createUsersTable() {
         try (Session session = sessionFactory.openSession()) {
